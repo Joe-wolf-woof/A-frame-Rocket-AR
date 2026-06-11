@@ -2,37 +2,49 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Jet Engine XR Prototype</title>
+    <title>AI Neural Network XR Prototype</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden;">
 
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        
-        <a-assets>
-            <a-asset-item id="jet-engine" src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF/DamagedHelmet.gltf"></a-asset-item>
-        </a-assets>
 
         <a-marker preset="hiro">
             
-            <a-entity id="engine-group" position="0 0 0" scale="0.5 0.5 0.5">
-                
-                <a-entity id="part-fan" 
-                          gltf-model="#jet-engine" 
-                          position="0 0 0"
-                          animation="property: position; to: 0 0 1.5; dur: 1000; startEvents: explode; resumeEvents: assemble"
-                          animation__reverse="property: position; to: 0 0 0; dur: 1000; startEvents: implode">
+            <a-entity id="nn-base" position="0 0 0" rotation="-40 0 0" scale="0.5 0.5 0.5">
+
+                <a-entity id="layer-input" position="0 0 0">
+                    <a-sphere position="-1 1 0" radius="0.15" color="#FF4B4B"></a-sphere>
+                    <a-sphere position="-1 0 0" radius="0.15" color="#FF4B4B"></a-sphere>
+                    <a-sphere position="-1 -1 0" radius="0.15" color="#FF4B4B"></a-sphere>
                 </a-entity>
 
-                <a-entity id="part-cowl" 
-                          gltf-model="#jet-engine" 
-                          position="0 0 0"
-                          animation="property: position; to: 1.5 0 0; dur: 1000; startEvents: explode"
+                <a-entity id="layer-hidden" position="0 0 0"
+                          animation="property: position; to: 0 0 -1.5; dur: 1000; startEvents: explode"
                           animation__reverse="property: position; to: 0 0 0; dur: 1000; startEvents: implode">
+                    <a-sphere position="0 1.5 0" radius="0.15" color="#1F77B4"></a-sphere>
+                    <a-sphere position="0 0.5 0" radius="0.15" color="#1F77B4"></a-sphere>
+                    <a-sphere position="0 -0.5 0" radius="0.15" color="#1F77B4"></a-sphere>
+                    <a-sphere position="0 -1.5 0" radius="0.15" color="#1F77B4"></a-sphere>
                 </a-entity>
 
-                <a-entity id="part-core" gltf-model="#jet-engine" position="0 0 0"></a-entity>
+                <a-entity id="layer-output" position="0 0 0"
+                          animation="property: position; to: 0 0 -3.0; dur: 1000; startEvents: explode"
+                          animation__reverse="property: position; to: 0 0 0; dur: 1000; startEvents: implode">
+                    <a-sphere position="1 0.5 0" radius="0.15" color="#2CA02C"></a-sphere>
+                    <a-sphere position="1 -0.5 0" radius="0.15" color="#2CA02C"></a-choice>
+                </a-entity>
+
+                <a-entity id="connections" opacity="0.6">
+                    <a-line from="-1 1 0" to="0 1.5 0" color="#AAAAAA"></a-line>
+                    <a-line from="-1 1 0" to="0 0.5 0" color="#AAAAAA"></a-line>
+                    <a-line from="-1 0 0" to="0 0.5 0" color="#AAAAAA"></a-line>
+                    <a-line from="-1 -1 0" to="0 -1.5 0" color="#AAAAAA"></a-line>
+                    
+                    <a-line from="0 0.5 0" to="1 0.5 0" color="#AAAAAA"></a-line>
+                    <a-line from="0 -0.5 0" to="1 -0.5 0" color="#AAAAAA"></a-line>
+                </a-entity>
 
             </a-entity>
 
@@ -44,23 +56,20 @@
     <script>
         let isExploded = false;
         
-        // 画面全体がタップされた時の処理
         document.body.addEventListener('click', () => {
-            const fan = document.querySelector('#part-fan');
-            const cowl = document.querySelector('#part-cowl');
+            const hiddenLayer = document.querySelector('#layer-hidden');
+            const outputLayer = document.querySelector('#layer-output');
 
             if (!isExploded) {
-                // 各パーツに「explode（分解）」イベントを発火
-                fan.emit('explode');
-                cowl.emit('explode');
+                hiddenLayer.emit('explode');
+                outputLayer.emit('explode');
                 isExploded = true;
-                console.log("ジェットエンジンを分解しました");
+                console.log("AIの論理構造を分解しました（解析モード）");
             } else {
-                // 各パーツに「implode（組み立て）」イベントを発火
-                fan.emit('implode');
-                cowl.emit('implode');
+                hiddenLayer.emit('implode');
+                outputLayer.emit('implode');
                 isExploded = false;
-                console.log("ジェットエンジンを組み立てました");
+                console.log("AIの論理構造を統合しました（推論モード）");
             }
         });
     </script>
